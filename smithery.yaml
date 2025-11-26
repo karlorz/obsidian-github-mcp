@@ -1,6 +1,6 @@
 # Smithery configuration file: https://smithery.ai/docs/config#smitheryyaml
 
-name: "@Hint-Services/obsidian-github-mcp"
+name: "@karlorz/obsidian-github-mcp"
 description: "A TypeScript-based Model Context Protocol (MCP) server for accessing GitHub repositories containing Obsidian vaults"
 version: "0.4.0"
 

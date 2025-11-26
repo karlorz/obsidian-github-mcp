@@ -10,7 +10,9 @@ Obsidian GitHub MCP is a Model Context Protocol (MCP) server that connects AI as
 
 ### Development
 - `pnpm install` - Install dependencies
-- `pnpm run build` - Build the project (includes linting and formatting)
+- `pnpm run build` - Build the bundled project (includes linting and formatting)
+- `pnpm run build:bundle` - Build with esbuild bundler (creates standalone executable)
+- `pnpm run build:stdio` - Build with TypeScript compiler (unbundled)
 - `pnpm run dev` - Run in development mode with inspector
 - `pnpm run watch` - Watch mode for automatic recompilation
 - `pnpm run debug:watch` - Debug mode with watch
@@ -51,6 +53,12 @@ The project follows a clean modular architecture:
 ### Development Notes
 - Uses Biome for linting and formatting (configured in `biome.json`)
 - TypeScript target: ES2020 with Node16 module resolution
+- **Bundled build with esbuild**: All dependencies bundled into a single executable for `npx` compatibility
 - Pre-build hooks ensure code quality before compilation
 - MCP Inspector available for testing tool interactions
 - No test framework currently configured (documentation mentions Jest but not implemented)
+
+### Build System
+- **`build.mjs`**: esbuild-based bundler that creates a standalone executable with all dependencies included
+- **Bundle output**: Single `build/index.js` file (~675KB) with shebang for direct execution
+- **npx compatibility**: Bundled build ensures all dependencies are included, fixing remote execution issues

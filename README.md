@@ -1,4 +1,4 @@
-[![smithery badge](https://smithery.ai/badge/@Hint-Services/obsidian-github-mcp)](https://smithery.ai/server/@Hint-Services/obsidian-github-mcp)
+[![smithery badge](https://smithery.ai/badge/@karlorz/obsidian-github-mcp)](https://smithery.ai/server/@karlorz/obsidian-github-mcp)
 [![npm version](https://img.shields.io/npm/v/obsidian-github-mcp)](https://www.npmjs.com/package/obsidian-github-mcp)
 
 # Obsidian GitHub MCP
@@ -63,16 +63,16 @@ The easiest way to install Obsidian GitHub MCP is using Smithery:
 
 ```bash
 # For Claude Desktop
-npx -y @smithery/cli install @Hint-Services/obsidian-github-mcp --client claude
+npx -y @smithery/cli install @karlorz/obsidian-github-mcp --client claude
 
 # For Cursor
-npx -y @smithery/cli install @Hint-Services/obsidian-github-mcp --client cursor
+npx -y @smithery/cli install @karlorz/obsidian-github-mcp --client cursor
 
 # For Windsurf
-npx -y @smithery/cli install @Hint-Services/obsidian-github-mcp --client windsurf
+npx -y @smithery/cli install @karlorz/obsidian-github-mcp --client windsurf
 
 # For Cline
-npx -y @smithery/cli install @Hint-Services/obsidian-github-mcp --client cline
+npx -y @smithery/cli install @karlorz/obsidian-github-mcp --client cline
 ```
 
 ### Manual Installation

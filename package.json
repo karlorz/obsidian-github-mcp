@@ -1,6 +1,6 @@
 {
-  "name": "obsidian-github-mcp",
-  "version": "0.6.0",
+  "name": "@karlorz/obsidian-github-mc",
+  "version": "0.7.0",
   "description": "A Model Context Protocol server for accessing GitHub repositories containing Obsidian vaults",
   "license": "MIT",
   "author": {
@@ -21,8 +21,9 @@
   "module": "src/index.ts",
   "scripts": {
     "prebuild": "npm run lint && npm run format",
-    "prepublishOnly": "npm run build:stdio",
-    "build": "npm run build:http",
+    "prepublishOnly": "npm run build:bundle",
+    "build": "npm run build:bundle",
+    "build:bundle": "node build.mjs",
     "build:stdio": "tsc && node -e \"const fs = require('fs'); const path = require('path'); const file = 'build/index.js'; const content = fs.readFileSync(file, 'utf8'); if (!content.startsWith('#!')) { fs.writeFileSync(file, '#!/usr/bin/env node\\n' + content); } fs.chmodSync(file, '755');\"",
     "build:http": "npx @smithery/cli build",
     "watch": "tsc --watch",
@@ -59,6 +60,7 @@
     "@biomejs/biome": "1.9.4",
     "@types/node": "^20.11.24",
     "concurrently": "^8.2.2",
+    "esbuild": "^0.24.0",
     "typescript": "^5.3.3",
     "vitest": "^3.2.3"
   },
@@ -67,10 +69,10 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/hint-services/obsidian-github-mcp.git"
+    "url": "git+https://github.com/karlorz/obsidian-github-mcp.git"
   },
   "bugs": {
-    "url": "https://github.com/hint-services/obsidian-github-mcp/issues"
+    "url": "https://github.com/karlorz/obsidian-github-mcp/issues"
   },
-  "homepage": "https://github.com/hint-services/obsidian-github-mcp#readme"
+  "homepage": "https://github.com/karlorz/obsidian-github-mcp#readme"
 }

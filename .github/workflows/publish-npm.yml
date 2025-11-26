@@ -1,0 +1,73 @@
+name: Publish to npm
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 10
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20.x'
+          registry-url: 'https://registry.npmjs.org'
+          cache: 'pnpm'
+
+      - name: Validate version (if triggered by release)
+        if: github.event_name == 'release'
+        run: |
+          TAG_VERSION=${GITHUB_REF#refs/tags/v}
+          PKG_VERSION=$(node -p "require('./package.json').version")
+          if [ "$TAG_VERSION" != "$PKG_VERSION" ]; then
+            echo "❌ Version mismatch: tag=$TAG_VERSION, package=$PKG_VERSION"
+            exit 1
+          fi
+          echo "✅ Version validated: $PKG_VERSION"
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build package
+        run: pnpm run build
+
+      - name: Verify build output
+        run: |
+          if [ ! -f "build/index.js" ]; then
+            echo "❌ Build output not found"
+            exit 1
+          fi
+          SIZE=$(stat -f%z build/index.js 2>/dev/null || stat -c%s build/index.js)
+          echo "✅ Build output: build/index.js ($SIZE bytes)"
+
+      - name: Publish to npm
+        run: pnpm publish --provenance --no-git-checks --access public
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Create publish summary
+        run: |
+          VERSION=$(node -p "require('./package.json').version")
+          echo "## 📦 Published to npm" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Package:** @karlorz/obsidian-github-mcp@$VERSION" >> $GITHUB_STEP_SUMMARY
+          echo "**Registry:** https://www.npmjs.com/package/@karlorz/obsidian-github-mcp" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Installation" >> $GITHUB_STEP_SUMMARY
+          echo '```bash' >> $GITHUB_STEP_SUMMARY
+          echo "npx @karlorz/obsidian-github-mcp@$VERSION" >> $GITHUB_STEP_SUMMARY
+          echo '```' >> $GITHUB_STEP_SUMMARY

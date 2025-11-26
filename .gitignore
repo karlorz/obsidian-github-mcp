@@ -42,3 +42,5 @@ coverage/
 .awolf
 claude_desktop_config.json
 .smithery
+
+CLAUDE.local.md
