@@ -1,5 +1,5 @@
 [![smithery badge](https://smithery.ai/badge/@karlorz/obsidian-github-mcp)](https://smithery.ai/server/@karlorz/obsidian-github-mcp)
-[![npm version](https://img.shields.io/npm/v/obsidian-github-mcp)](https://www.npmjs.com/package/obsidian-github-mcp)
+[![npm version](https://img.shields.io/npm/v/@karlorz/obsidian-github-mcp)](https://www.npmjs.com/package/@karlorz/obsidian-github-mcp)
 
 # Obsidian GitHub MCP
 
@@ -78,7 +78,7 @@ npx -y @smithery/cli install @karlorz/obsidian-github-mcp --client cline
 ### Manual Installation
 
 ```bash
-npm install obsidian-github-mcp
+npm install @karlorz/obsidian-github-mcp
 ```
 
 ## Configuration
@@ -90,7 +90,7 @@ Add the server to your MCP settings file with the following configuration:
   "mcpServers": {
     "obsidianGithub": {
       "command": "npx",
-      "args": ["-y", "obsidian-github-mcp"],
+      "args": ["-y", "@karlorz/obsidian-github-mcp"],
       "env": {
         "GITHUB_TOKEN": "your-github-token",
         "GITHUB_OWNER": "your-github-username",
@@ -279,7 +279,7 @@ If you're migrating from the older `mcp-private-github-search` package:
      "mcpServers": {
        "obsidianGithub": {
          "command": "npx",
-         "args": ["-y", "obsidian-github-mcp"]
+         "args": ["-y", "@karlorz/obsidian-github-mcp"]
        }
      }
    }

@@ -1,5 +1,5 @@
 {
-  "name": "@karlorz/obsidian-github-mc",
+  "name": "@karlorz/obsidian-github-mcp",
   "version": "0.7.1",
   "description": "A Model Context Protocol server for accessing GitHub repositories containing Obsidian vaults",
   "license": "MIT",
