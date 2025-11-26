@@ -29,9 +29,14 @@ Many Obsidian users store their vaults in GitHub for backup, versioning, and col
 - **getFileContents**: Retrieve the contents of specific notes, documents, or files from your Obsidian vault
 - **searchFiles**: Enhanced search with multiple modes:
   - `filename`: Find files by exact filename (perfect for "OKR 2025" type searches)
-  - `path`: Search anywhere in file paths 
+  - `path`: Search anywhere in file paths
   - `content`: Search within file contents
   - `all`: Comprehensive search across filenames, paths, and content
+- **searchCode**: Search for specific code patterns and text within file contents (similar to `gh search code`):
+  - Find specific code snippets, quotes, or text patterns within your notes
+  - Filter by programming language or file type
+  - Get ranked results with relevance scores
+  - Supports pagination for large result sets
 
 ### Project Management Integration
 
@@ -183,6 +188,32 @@ Your GitHub token needs the following permissions:
   "arguments": {
     "query": "path:*.md extension:md",
     "searchIn": "content"
+  }
+}
+```
+
+### Searching for Specific Code or Text Patterns
+
+```json
+{
+  "tool": "searchCode",
+  "arguments": {
+    "query": "webgpu",
+    "page": 1,
+    "perPage": 30
+  }
+}
+```
+
+### Searching Code with Language Filter
+
+```json
+{
+  "tool": "searchCode",
+  "arguments": {
+    "query": "function calculateTotal",
+    "language": "javascript",
+    "perPage": 10
   }
 }
 ```

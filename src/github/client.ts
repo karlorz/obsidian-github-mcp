@@ -801,6 +801,172 @@ Then provide:
       }
     );
 
+    // searchCode tool - searches for code within file contents
+    server.tool(
+      "searchCode",
+      `Search for code patterns and content within files in your Obsidian vault on GitHub (${this.config.owner}/${this.config.repo}). Similar to 'gh search code', this tool finds specific code, text, or patterns within file contents and shows matching snippets.`,
+      {
+        query: z
+          .string()
+          .describe(
+            "Code or text pattern to search for within file contents. Supports GitHub code search syntax."
+          ),
+        language: z
+          .string()
+          .optional()
+          .describe(
+            "Filter by file language/extension (e.g., 'markdown', 'python', 'javascript')"
+          ),
+        page: z
+          .number()
+          .optional()
+          .default(1)
+          .describe(
+            "Page number to retrieve (1-indexed, following GitHub API convention)"
+          ),
+        perPage: z
+          .number()
+          .optional()
+          .default(30)
+          .describe("Number of results per page (max 100)"),
+      },
+      {
+        readOnlyHint: true,
+        destructiveHint: false,
+        idempotentHint: true,
+        openWorldHint: true,
+      },
+      async ({ query, language, page = 1, perPage = 30 }) => {
+        // Build search query with repository qualifier
+        const repoQualifier = `repo:${this.config.owner}/${this.config.repo}`;
+        let qualifiedQuery = `${query} ${repoQualifier}`;
+
+        // Add language filter if specified
+        if (language) {
+          qualifiedQuery += ` language:${language}`;
+        }
+
+        // Perform the code search
+        let searchResults: {
+          items: Array<{
+            name: string;
+            path: string;
+            sha: string;
+            html_url: string;
+            repository: {
+              full_name: string;
+            };
+            score: number;
+          }>;
+          total_count: number;
+          incomplete_results: boolean;
+        };
+
+        try {
+          searchResults = await this.handleRequest(async () => {
+            return this.octokit.search.code({
+              q: qualifiedQuery,
+              page,
+              per_page: Math.min(perPage, 100), // GitHub max is 100
+            });
+          });
+        } catch (error) {
+          // Enhanced error messages
+          const errorMessage =
+            error instanceof Error ? error.message : String(error);
+          if (errorMessage.includes("validation failed")) {
+            throw new Error(
+              `GitHub code search query invalid: "${qualifiedQuery}". Try simpler terms or check syntax.`
+            );
+          }
+          if (errorMessage.includes("rate limit")) {
+            throw new Error(
+              "GitHub code search rate limit exceeded (10 requests/minute). Wait a moment and try again."
+            );
+          }
+          if (
+            errorMessage.includes("Forbidden") ||
+            errorMessage.includes("401")
+          ) {
+            throw new Error(
+              "GitHub API access denied. Check that your token has 'repo' scope for private repositories."
+            );
+          }
+          throw error;
+        }
+
+        // Format the results
+        if (searchResults.total_count === 0) {
+          let resultText = `No code matches found for "${query}"`;
+          if (language) {
+            resultText += ` in ${language} files`;
+          }
+          resultText += ".\n\n";
+          resultText += "💡 **Search Tips:**\n";
+          resultText += "- Try simpler or partial search terms\n";
+          resultText += "- Remove language filters to broaden search\n";
+          resultText += '- Use quotes for exact phrases: "exact phrase"\n';
+          resultText +=
+            "- Remember: only files < 384 KB on default branch are searchable\n";
+
+          return {
+            content: [
+              {
+                type: "text" as const,
+                text: resultText,
+              },
+            ],
+          };
+        }
+
+        // Build formatted response
+        let resultText = `Found ${searchResults.total_count} code matches for "${query}"`;
+        if (language) {
+          resultText += ` in ${language} files`;
+        }
+        resultText += ":\n\n";
+
+        // Add pagination info if there are more results
+        const totalPages = Math.ceil(searchResults.total_count / perPage);
+        if (totalPages > 1) {
+          resultText += `📄 Showing page ${page} of ${totalPages} (${searchResults.items.length} results on this page)\n\n`;
+        }
+
+        // Format each result
+        for (const item of searchResults.items) {
+          const fileName = item.name;
+          const filePath = item.path;
+          const fileUrl = item.html_url;
+          const relevanceScore = item.score.toFixed(2);
+
+          resultText += `### 📄 ${fileName}\n`;
+          resultText += `- **Path**: \`${filePath}\`\n`;
+          resultText += `- **URL**: ${fileUrl}\n`;
+          resultText += `- **Relevance**: ${relevanceScore}\n`;
+          resultText += "\n";
+        }
+
+        // Add helpful footer
+        resultText += "\n---\n\n";
+        resultText += "💡 **Next Steps:**\n";
+        resultText +=
+          "- Use `getFileContents` tool with the file path to view full content\n";
+        if (totalPages > page) {
+          resultText += `- Use \`page: ${page + 1}\` to see more results\n`;
+        }
+        resultText += "- Refine your search query for more specific matches\n";
+
+        return {
+          content: [
+            {
+              type: "text" as const,
+              text: resultText,
+            },
+          ],
+        };
+      }
+    );
+
     // diagnoseSearch tool for repository diagnostics
     server.tool(
       "diagnoseSearch",
